@@ -4,7 +4,6 @@ const fs = require('fs')
 const path = require('path')
 const globby = require('globby')
 const MarkdownIt = require('markdown-it')
-const markdownItLatex = require('markdown-it-latex').default
 const markdownItHighlight = require('markdown-it-highlight').default
 const yaml = require('js-yaml')
 const mkdirp = require('mkdirp')
@@ -27,17 +26,15 @@ function processmd (options, callback) {
 
   const markdownIt = MarkdownIt(options.markdownOptions)
 
-  if (options.renderLatex) {
-    markdownIt.use(markdownItLatex)
-  }
-
   if (options.highlightCode) {
     markdownIt.use(markdownItHighlight)
   }
   if (options.headingIds) {
     markdownIt.use(require('markdown-it-named-headings'))
   }
-
+  markdownIt.use(require('markdown-it-underline'))
+  markdownIt.use(require('markdown-it-video'),{ youtube: { width: 640, height: 390 }})
+  markdownIt.use(require('markdown-it-anchor',{level:2}))
   options.markdownRenderer = options.markdownRenderer || function mdRender (str) { return markdownIt.render(str) }
 
   const globs = (options.files || []).concat(options._ || [])
